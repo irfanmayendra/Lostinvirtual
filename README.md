@@ -3,16 +3,17 @@
 The digital frontier's premier citizen registry. A sovereign ecosystem for identity, status, and community.
 
 ## Architecture
-Built for agility, security, and scale.
-- **Monorepo:** Next.js 16 (App Router), TypeScript, Tailwind CSS.
-- **Environment Strategy:**
-  - `main`: Production (Port 3001)
-  - `staging`: UAT/Testing (Port 3002)
-  - `develop`: Active Development (Port 3003)
+- **Monorepo**: Next.js 16 (Web), shared packages, and Dockerized infrastructure.
+- **Workflow**: Git-flow inspired (main, staging, develop, feature/*).
+- **Deployment**: Automated CI/CD pipelines to VPS via Portainer/Docker.
 
-## Workflow
-1. Push to branch.
-2. GitHub Actions triggers deploy to VPS.
-3. Docker containers run per environment.
+## Branching Strategy
+- `main`: Production-ready, stable releases.
+- `staging`: Pre-release testing, QA.
+- `develop`: Integration branch for active feature development.
+- `feature/*`: Short-lived branches for individual tasks.
 
-*Sovereign. Secure. Infinite.*
+## Getting Started
+1. Clone the repo.
+2. Ensure environment variables are set (see `.env.example`).
+3. Deploy via Docker: `bash docker/deploy.sh`
