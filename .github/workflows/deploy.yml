@@ -1,14 +1,11 @@
 name: Deploy Pipeline
 on:
   push:
-    branches: [main, staging, develop]
+    branches: [ main, staging ]
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Deploy to VPS
-        run: |
-          # SSH to VPS and trigger update script
-          # (Logic to trigger update on VPS via Portainer API or Webhook)
-          echo "Deploying branch ${{ github.ref_name }}..."
+      - name: Build
+        run: echo "Building for ${{ github.ref_name }}..."
