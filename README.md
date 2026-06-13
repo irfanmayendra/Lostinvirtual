@@ -1,28 +1,18 @@
 # LostInVirtual | Citizen Registry
 
-The digital frontier's premier citizen registry. Claim your identity, secure your status, and become part of the ecosystem.
+The digital frontier's premier citizen registry. A sovereign ecosystem for identity, status, and community.
 
-## Vision
-To build a sovereign, secure, and transparent registry system for the digital nomad and virtual citizen ecosystem. LostInVirtual is built to be the operating system for your virtual identity.
+## Architecture
+Built for agility, security, and scale.
+- **Monorepo:** Next.js 16 (App Router), TypeScript, Tailwind CSS.
+- **Environment Strategy:**
+  - `main`: Production (Port 3001)
+  - `staging`: UAT/Testing (Port 3002)
+  - `develop`: Active Development (Port 3003)
 
-## Development Workflow
-We follow an agile, modern industry standard for continuous delivery.
+## Workflow
+1. Push to branch.
+2. GitHub Actions triggers deploy to VPS.
+3. Docker containers run per environment.
 
-### Branching Strategy
-- `main`: Production-ready, stable, deployed to VPS.
-- `staging`: Pre-production, mirrors production for final QA.
-- `dev`: Active development, integration of new features.
-
-### Automated Deployment
-- Push to `main` -> Auto-deploy to Production.
-- Push to `staging` -> Auto-deploy to Staging environment.
-- Push to `dev` -> Auto-deploy to Development environment.
-
-## Infrastructure
-- **Orchestration:** Docker Compose
-- **Management:** Portainer
-- **Proxy/Ingress:** Nginx Proxy Manager
-- **Access:** Cloudflare Tunnel
-
----
-*Built with spirit, secured by design.*
+*Sovereign. Secure. Infinite.*

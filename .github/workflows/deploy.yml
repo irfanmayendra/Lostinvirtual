@@ -1,32 +1,19 @@
 name: Deploy to VPS
-
 on:
   push:
-    branches:
-      - main
-      - staging
-      - dev
-
+    branches: [ main, staging, develop ]
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Deploy based on branch
-        run: |
-          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
-            export PORT=3001
-            export ENV=prod
-          elif [ "${{ github.ref }}" == "refs/heads/staging" ]; then
-            export PORT=3002
-            export ENV=staging
-          else
-            export PORT=3003
-            export ENV=dev
-          fi
-          
-          # Use docker-compose with specific profile/env
-          docker compose -p lostinvirtual-$ENV up -d --build
-          
-          echo "Deployed to port $PORT (Environment: $ENV)"
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_IP }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /opt/data/lostinvirtual
+            git pull origin ${{ github.ref_name }}
+            docker compose -f docker/docker-compose.${{ github.ref_name }}.yml up -d --build

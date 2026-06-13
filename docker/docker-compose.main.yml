@@ -1,6 +1,7 @@
 services:
-  web:
+  app:
+    image: lostinvirtual-main
     build: .
-    ports:
-      - "3000:3000"
-    restart: always
+    ports: ["3001:3001"]
+    environment:
+      - NODE_ENV=production
