@@ -1,8 +1,26 @@
 services:
   web:
-    image: nginx:alpine
-    volumes:
-      - /opt/data/lostinvirtual/index.html:/usr/share/nginx/html/index.html
+    build:
+      context: ./apps/web
     ports:
-      - "8089:80"
-    restart: always
+      - "3000:3000"
+    environment:
+      - KEYCLOAK_CLIENT_ID=lostinvirtual-client
+      - KEYCLOAK_CLIENT_SECRET=change-me
+      - KEYCLOAK_ISSUER=http://localhost:8080/realms/lostinvirtual
+    depends_on:
+      - keycloak
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0
+    command: start-dev
+    ports:
+      - "8080:8080"
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+
+volumes:
+  keycloak_data:
