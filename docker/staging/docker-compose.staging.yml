@@ -1,0 +1,13 @@
+services:
+  web-staging:
+    build:
+      context: ../apps/web
+    container_name: liv-web-staging
+    ports:
+      - "3002:3000"
+    environment:
+      - KEYCLOAK_CLIENT_ID=lostinvirtual-client
+      - KEYCLOAK_ISSUER=https://keycloak.lostinvirtual.world/realms/lostinvirtual
+      - NEXTAUTH_URL=https://staging.lostinvirtual.world
+      - NODE_ENV=staging
+    restart: unless-stopped

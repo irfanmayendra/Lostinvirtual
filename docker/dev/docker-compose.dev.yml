@@ -1,0 +1,13 @@
+services:
+  web-dev:
+    build:
+      context: ../apps/web
+    container_name: liv-web-dev
+    ports:
+      - "3001:3000"
+    environment:
+      - KEYCLOAK_CLIENT_ID=lostinvirtual-client
+      - KEYCLOAK_ISSUER=https://keycloak.lostinvirtual.world/realms/lostinvirtual
+      - NEXTAUTH_URL=https://dev.lostinvirtual.world
+      - NODE_ENV=development
+    restart: unless-stopped
