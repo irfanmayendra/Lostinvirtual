@@ -1,0 +1,37 @@
+###############################################################################
+# LostInVirtual - Dev Environment
+# Pulls image from GHCR, connects to auth_net for Keycloak integration
+#
+# Usage:
+#   docker compose -f docker-compose.dev.yml pull
+#   docker compose -f docker-compose.dev.yml up -d
+###############################################################################
+
+services:
+  web-dev:
+    image: ghcr.io/irfanmayendra/lostinvirtual/web:dev-latest
+    container_name: liv-web-dev
+    ports:
+      - "3000:3000"
+    environment:
+      - KEYCLOAK_URL=https://keycloak.lostinvirtual.world
+      - KEYCLOAK_REALM=lostinvirtual
+      - KEYCLOAK_CLIENT_ID=liv-app-dev
+      - KEYCLOAK_CLIENT_SECRET=${KC_CLIENT_SECRET_DEV}
+      - KEYCLOAK_ISSUER=https://keycloak.lostinvirtual.world/realms/lostinvirtual
+      - NEXTAUTH_URL=http:/...3000
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - NODE_ENV=development
+    networks:
+      - auth_net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+networks:
+  auth_net:
+    external: true

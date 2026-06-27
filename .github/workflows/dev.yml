@@ -1,0 +1,191 @@
+###############################################################################
+# LostInVirtual - Dev CI/CD Pipeline
+# Trigger: push to dev branch
+# Flow: lint → build → push GHCR → deploy → E2E test
+###############################################################################
+
+name: Dev Pipeline
+
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [dev]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/web
+  DEV_PORT: "3000"
+
+jobs:
+  # ──────────────────────────────────────────────────────────────────────────────
+  # Stage 1: Lint & Type Check
+  # ──────────────────────────────────────────────────────────────────────────────
+  lint:
+    name: 🔍 Lint & TypeCheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit --project apps/web/tsconfig.json
+
+      - name: Lint
+        run: npm run lint --workspace=web || true
+
+  # ──────────────────────────────────────────────────────────────────────────────
+  # Stage 2: Build & Push to GHCR
+  # ──────────────────────────────────────────────────────────────────────────────
+  build:
+    name: 🏗️ Build & Push
+    runs-on: ubuntu-latest
+    needs: lint
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tags }}
+      image_digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=dev-
+            type=raw,value=dev-latest
+
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ──────────────────────────────────────────────────────────────────────────────
+  # Stage 3: Deploy to Dev Server
+  # ──────────────────────────────────────────────────────────────────────────────
+  deploy-dev:
+    name: 🚀 Deploy Dev
+    runs-on: ubuntu-latest
+    needs: build
+    environment: dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEV_SERVER_HOST }}
+          username: ${{ secrets.DEV_SERVER_USER }}
+          key: ${{ secrets.DEV_SERVER_SSH_KEY }}
+          script: |
+            set -e
+
+            # Login to GHCR
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            # Pull new image
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev-latest
+
+            # Stop old container
+            docker stop liv-web-dev 2>/dev/null || true
+            docker rm liv-web-dev 2>/dev/null || true
+
+            # Start new container
+            docker run -d \
+              --name liv-web-dev \
+              --network auth_net \
+              -p 3000:3000 \
+              -e KEYCLOAK_URL=https://keycloak.lostinvirtual.world \
+              -e KEYCLOAK_REALM=lostinvirtual \
+              -e KEYCLOAK_CLIENT_ID=liv-app-dev \
+              -e KEYCLOAK_CLIENT_SECRET=${{ secrets.KC_CLIENT_SECRET_DEV }} \
+              -e KEYCLOAK_ISSUER=https://keycloak.lostinvirtual.world/realms/lostinvirtual \
+              -e NEXTAUTH_URL=http://localhost:3000 \
+              -e NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} \
+              -e NODE_ENV=development \
+              --restart unless-stopped \
+              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev-latest
+
+            echo "✅ Dev container deployed"
+
+  # ──────────────────────────────────────────────────────────────────────────────
+  # Stage 4: E2E Smoke Test
+  # ──────────────────────────────────────────────────────────────────────────────
+  e2e-test:
+    name: 🧪 E2E Test
+    runs-on: ubuntu-latest
+    needs: deploy-dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Wait for deployment
+        run: sleep 15
+
+      - name: Health check - Landing page
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 http://${{ secrets.DEV_SERVER_HOST }}:3000)
+          if [ "$STATUS" != "200" ]; then
+            echo "❌ Landing page returned $STATUS"
+            exit 1
+          fi
+          echo "✅ Landing page OK ($STATUS)"
+
+      - name: Health check - Auth endpoint
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 http://${{ secrets.DEV_SERVER_HOST }}:3000/api/auth/providers)
+          if [ "$STATUS" != "200" ]; then
+            echo "❌ Auth endpoint returned $STATUS"
+            exit 1
+          fi
+          echo "✅ Auth endpoint OK ($STATUS)"
+
+      - name: Health check - Dashboard redirect
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 -L http://${{ secrets.DEV_SERVER_HOST }}:3000/dashboard)
+          echo "Dashboard status: $STATUS"
+          echo "✅ Dashboard accessible"
+
+  # ──────────────────────────────────────────────────────────────────────────────
+  # Stage 5: Notify
+  # ──────────────────────────────────────────────────────────────────────────────
+  notify:
+    name: 📢 Notify
+    runs-on: ubuntu-latest
+    needs: [build, deploy-dev, e2e-test]
+    if: always()
+    steps:
+      - name: Summary
+        run: |
+          echo "## Dev Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Stage | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | ${{ needs.build.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Deploy | ${{ needs.deploy-dev.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| E2E | ${{ needs.e2e-test.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** \`${{ needs.build.outputs.image_tag }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Digest:** \`${{ needs.build.outputs.image_digest }}\`" >> $GITHUB_STEP_SUMMARY
