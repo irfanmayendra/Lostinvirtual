@@ -1,0 +1,355 @@
+/* ================================================================
+   LostInVirtual — Custom Keycloak Theme
+   Dark mode, Inter font, blue/purple accents.
+   Linear.app meets Vercel aesthetic.
+   ================================================================ */
+
+/* === Import Inter font === */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* === Reset Keycloak defaults === */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #000 !important;
+  color: #fff;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* === Login page background === */
+#kc-page-content,
+#kc-header-wrapper,
+.kc-container,
+.kc-container-grid,
+body {
+  background: #000 !important;
+}
+
+/* === Main login card wrapper === */
+#kc-content {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+#kc-content-wrapper {
+  max-width: 440px;
+  margin: 100px auto 40px;
+}
+
+/* === Header / Branding === */
+#kc-header {
+  display: none !important;
+}
+
+/* === Card container === */
+.pf-c-form,
+form.pf-c-form {
+  background: rgba(9, 9, 11, 0.7) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 16px !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  padding: 32px !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.03),
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* === Custom branding header === */
+.login-pf-page .login-pf-header {
+  text-align: center !important;
+  margin-bottom: 32px !important;
+  padding-bottom: 24px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.login-pf-page .login-pf-header h1 {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.15em !important;
+  text-transform: uppercase !important;
+  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #818cf8 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  margin: 0 !important;
+}
+
+.login-pf-page .login-pf-header .login-pf-page-header-pf {
+  display: block !important;
+  font-size: 24px !important;
+  font-weight: 800 !important;
+  color: #fff !important;
+  margin-top: 8px !important;
+  letter-spacing: -0.02em !important;
+  -webkit-text-fill-color: #fff !important;
+}
+
+/* === Form headings === */
+.pf-c-form__group label,
+.pf-c-form__label {
+  color: rgba(255, 255, 255, 0.4) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+.pf-c-form__label-text {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* === Input fields === */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="url"],
+input.pf-m-user,
+input.pf-m-password,
+.pf-c-form__input {
+  width: 100% !important;
+  padding: 12px 16px !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  color: #fff !important;
+  font-size: 14px !important;
+  font-family: 'Inter', sans-serif !important;
+  transition: all 0.2s ease !important;
+  outline: none !important;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="url"]:focus,
+input.pf-m-user:focus,
+input.pf-m-password:focus,
+.pf-c-form__input:focus {
+  border-color: rgba(59, 130, 246, 0.5) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+  outline: none !important;
+}
+
+input::placeholder {
+  color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* === Submit buttons === */
+.pf-c-button.pf-m-primary,
+input[type="submit"],
+button[type="submit"] {
+  width: 100% !important;
+  padding: 12px 24px !important;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%) !important;
+  border: none !important;
+  border-radius: 12px !important;
+  color: #fff !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  font-family: 'Inter', sans-serif !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2) !important;
+}
+
+.pf-c-button.pf-m-primary:hover,
+input[type="submit"]:hover,
+button[type="submit"]:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3) !important;
+}
+
+.pf-c-button.pf-m-primary:active,
+input[type="submit"]:active,
+button[type="submit"]:active {
+  transform: translateY(0) !important;
+}
+
+/* === Secondary / cancel buttons === */
+.pf-c-button.pf-m-secondary,
+a.pf-c-button.pf-m-secondary {
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  border-radius: 12px !important;
+  font-weight: 500 !important;
+}
+
+.pf-c-button.pf-m-secondary:hover {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #fff !important;
+}
+
+/* === Links === */
+a {
+  color: #3b82f6 !important;
+  text-decoration: none !important;
+  transition: color 0.2s ease !important;
+}
+
+a:hover {
+  color: #60a5fa !important;
+  text-decoration: none !important;
+}
+
+/* === Alert / Error messages === */
+.alert-danger,
+.pf-c-alert.pf-m-danger,
+.login-pf-page .alert {
+  background: rgba(239, 68, 68, 0.05) !important;
+  border: 1px solid rgba(239, 68, 68, 0.2) !important;
+  border-radius: 12px !important;
+  color: #fca5a5 !important;
+  padding: 12px 16px !important;
+  font-size: 13px !important;
+}
+
+.alert-success,
+.pf-c-alert.pf-m-success {
+  background: rgba(34, 197, 94, 0.05) !important;
+  border: 1px solid rgba(34, 197, 94, 0.2) !important;
+  border-radius: 12px !important;
+  color: #86efac !important;
+  padding: 12px 16px !important;
+  font-size: 13px !important;
+}
+
+/* === Checkbox / Remember me === */
+.pf-c-check input[type="checkbox"] {
+  accent-color: #3b82f6 !important;
+}
+
+.pf-c-check__label {
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-size: 13px !important;
+}
+
+/* === Divider lines === */
+.pf-c-divider,
+hr {
+  border-color: rgba(255, 255, 255, 0.06) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* === Footer / social login === */
+.login-pf-page .login-pf-social-section {
+  margin-top: 24px !important;
+  padding-top: 24px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.social-login-divider {
+  color: rgba(255, 255, 255, 0.3) !important;
+  font-size: 12px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+}
+
+/* === Social buttons === */
+.pf-c-button.social-login-btn {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-weight: 500 !important;
+}
+
+.pf-c-button.social-login-btn:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* === Page footer / info === */
+#kc-info {
+  max-width: 440px !important;
+  margin: 0 auto !important;
+  padding: 24px !important;
+  text-align: center !important;
+}
+
+#kc-info-wrapper {
+  color: rgba(255, 255, 255, 0.2) !important;
+  font-size: 12px !important;
+}
+
+#kc-page-title {
+  color: #fff !important;
+  font-weight: 700 !important;
+  font-size: 20px !important;
+  margin-bottom: 8px !important;
+}
+
+/* === Registration form adjustments === */
+#kc-registration {
+  margin-top: 16px !important;
+}
+
+#kc-registration p {
+  color: rgba(255, 255, 255, 0.3) !important;
+  font-size: 13px !important;
+}
+
+/* === Responsive adjustments === */
+@media (max-width: 480px) {
+  #kc-content-wrapper {
+    margin: 60px 16px 24px;
+  }
+
+  .pf-c-form,
+  form.pf-c-form {
+    padding: 24px !important;
+    border-radius: 12px !important;
+  }
+
+  .login-pf-page .login-pf-header .login-pf-page-header-pf {
+    font-size: 20px !important;
+  }
+}
+
+/* === Remove Keycloak default decorations === */
+.login-pf-body::before {
+  display: none !important;
+}
+
+.pf-c-login__header-brand {
+  display: none !important;
+}
+
+/* === Scrollbar styling === */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* === Selection === */
+::selection {
+  background: rgba(59, 130, 246, 0.3);
+  color: #fff;
+}
