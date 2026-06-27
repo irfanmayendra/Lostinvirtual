@@ -89,7 +89,9 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
     try {
-      await signIn("keycloak", { callbackUrl: "/dashboard" });
+      // Use callbackUrl from query params if available, otherwise default to /dashboard
+      const callbackUrl = (router.query.callbackUrl as string) || '/dashboard';
+      await signIn("keycloak", { callbackUrl });
     } catch {
       setError("Failed to sign in. Please try again.");
       setLoading(false);

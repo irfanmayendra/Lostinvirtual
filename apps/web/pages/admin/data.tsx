@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
+import AdminLayout from '@/components/admin/AdminLayout';
 
 const spring = { type: 'spring' as const, stiffness: 100, damping: 20 };
 
@@ -99,7 +100,6 @@ function MerchBadge({ type }: { type: string }) {
 /* ------------------------------------------------------------------ */
 
 export default function AdminDataPage() {
-  const router = useRouter();
   const [citizens, setCitizens] = useState<CitizenData[]>([]);
   const [tokens, setTokens] = useState<TokenData[]>([]);
   const [regions, setRegions] = useState<RegionStats[]>([]);
@@ -150,17 +150,19 @@ export default function AdminDataPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-8 h-8 border-2 border-white/10 border-t-blue-500 rounded-full animate-spin" />
-          <p className="text-sm text-gray-500 font-mono">Loading data...</p>
+      <AdminLayout>
+        <div className="flex items-center justify-center py-20">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-8 h-8 border-2 border-white/10 border-t-blue-500 rounded-full animate-spin" />
+            <p className="text-sm text-gray-500 font-mono">Loading data...</p>
+          </div>
         </div>
-      </div>
+      </AdminLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <AdminLayout>
       <Head>
         <title>Data Explorer — LostInVirtual</title>
       </Head>
@@ -181,12 +183,7 @@ export default function AdminDataPage() {
               Data Explorer
             </span>
           </div>
-          <button
-            onClick={() => router.push('/')}
-            className="text-sm text-gray-500 hover:text-white transition-colors"
-          >
-            ← Home
-          </button>
+          <span className="text-xs text-gray-600 font-mono">/ data explorer</span>
         </div>
       </motion.header>
 
@@ -400,6 +397,6 @@ export default function AdminDataPage() {
           </motion.div>
         )}
       </main>
-    </div>
+    </AdminLayout>
   );
 }
