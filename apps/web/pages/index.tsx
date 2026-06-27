@@ -1,7 +1,20 @@
 import React from 'react';
 import Head from 'next/head';
+import AuthButton from '@/components/AuthButton';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 
 export default function Home() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      router.push('/dashboard');
+    }
+  }, [status]);
+
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6">
       <Head>
@@ -20,10 +33,12 @@ export default function Home() {
           <button className="px-8 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold transition-all">
             Get Resident Card
           </button>
-          <button className="px-8 py-3 border border-gray-700 hover:border-gray-500 rounded-lg font-semibold transition-all">
-            Login
-          </button>
+          <AuthButton />
         </div>
+
+        {status === 'loading' && (
+          <p className="text-gray-500 animate-pulse">Checking session...</p>
+        )}
       </main>
 
       <footer className="absolute bottom-8 text-gray-600 text-sm">
