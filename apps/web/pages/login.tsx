@@ -9,17 +9,6 @@ import GradientText from "@/components/ui/GradientText";
 import MotionButton from "@/components/ui/MotionButton";
 
 /* ------------------------------------------------------------------ */
-/* Keycloak constants (with fallbacks)                                 */
-/* ------------------------------------------------------------------ */
-
-const KEYCLOAK_URL =
-  process.env.NEXT_PUBLIC_KEYCLOAK_URL || "https://keycloak.lostinvirtual.world";
-const KEYCLOAK_REALM =
-  process.env.NEXT_PUBLIC_KEYCLOAK_REALM || "lostinvirtual";
-const KEYCLOAK_CLIENT_ID =
-  process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID || "liv-app-dev";
-
-/* ------------------------------------------------------------------ */
 /* Animation variants                                                  */
 /* ------------------------------------------------------------------ */
 
@@ -42,7 +31,7 @@ const fadeUp = {
 };
 
 /* ------------------------------------------------------------------ */
-/* Floating orb component                                              */
+/* Floating orb                                                        */
 /* ------------------------------------------------------------------ */
 
 function FloatingOrb({
@@ -86,43 +75,6 @@ function FloatingOrb({
 }
 
 /* ------------------------------------------------------------------ */
-/* Input field component                                               */
-/* ------------------------------------------------------------------ */
-
-function FormInput({
-  label,
-  type = "text",
-  placeholder,
-  icon,
-}: {
-  label: string;
-  type?: string;
-  placeholder: string;
-  icon: React.ReactNode;
-}) {
-  return (
-    <motion.div variants={fadeUp} transition={springTransition}>
-      <label className="block text-sm font-medium text-gray-400 mb-2">
-        {label}
-      </label>
-      <div className="relative">
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-          {icon}
-        </div>
-        <input
-          type={type}
-          placeholder={placeholder}
-          className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white placeholder-gray-600 text-sm focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all"
-          readOnly
-          tabIndex={-1}
-          aria-hidden
-        />
-      </div>
-    </motion.div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
 /* Page                                                                */
 /* ------------------------------------------------------------------ */
 
@@ -130,6 +82,8 @@ export default function LoginPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSignIn = async () => {
     setLoading(true);
@@ -142,15 +96,10 @@ export default function LoginPage() {
     }
   };
 
-  const handleCreateAccount = () => {
-    const callbackUrl = `${window.location.origin}/api/auth/callback/keycloak`;
-    const registrationUrl =
-      `${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/registrations` +
-      `?client_id=${KEYCLOAK_CLIENT_ID}` +
-      `&redirect_uri=${encodeURIComponent(callbackUrl)}` +
-      `&response_type=code` +
-      `&scope=openid`;
-    window.location.href = registrationUrl;
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && email && password) {
+      handleSignIn();
+    }
   };
 
   return (
@@ -164,27 +113,9 @@ export default function LoginPage() {
       </Head>
 
       {/* Background orbs */}
-      <FloatingOrb
-        color="rgba(59,130,246,0.12)"
-        size={450}
-        top="-15%"
-        left="15%"
-        delay={0}
-      />
-      <FloatingOrb
-        color="rgba(139,92,246,0.10)"
-        size={350}
-        top="50%"
-        left="65%"
-        delay={2}
-      />
-      <FloatingOrb
-        color="rgba(236,72,153,0.06)"
-        size={300}
-        top="70%"
-        left="5%"
-        delay={4}
-      />
+      <FloatingOrb color="rgba(59,130,246,0.12)" size={450} top="-15%" left="15%" delay={0} />
+      <FloatingOrb color="rgba(139,92,246,0.10)" size={350} top="50%" left="65%" delay={2} />
+      <FloatingOrb color="rgba(236,72,153,0.06)" size={300} top="70%" left="5%" delay={4} />
 
       {/* Card */}
       <motion.div
@@ -230,33 +161,55 @@ export default function LoginPage() {
             </motion.div>
           )}
 
-          {/* Form fields (visual only) */}
+          {/* Form fields */}
           <motion.div
             className="space-y-4 mb-6"
             variants={staggerContainer}
             initial="hidden"
             animate="visible"
+            onKeyDown={handleKeyDown}
           >
-            <FormInput
-              label="Email"
-              type="email"
-              placeholder="you@example.com"
-              icon={
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-                </svg>
-              }
-            />
-            <FormInput
-              label="Password"
-              type="password"
-              placeholder="••••••••"
-              icon={
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                </svg>
-              }
-            />
+            {/* Email */}
+            <motion.div variants={fadeUp} transition={springTransition}>
+              <label className="block text-sm font-medium text-gray-400 mb-2">
+                Email
+              </label>
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                  </svg>
+                </div>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white placeholder-gray-600 text-sm focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all"
+                />
+              </div>
+            </motion.div>
+
+            {/* Password */}
+            <motion.div variants={fadeUp} transition={springTransition}>
+              <label className="block text-sm font-medium text-gray-400 mb-2">
+                Password
+              </label>
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                  </svg>
+                </div>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white placeholder-gray-600 text-sm focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all"
+                />
+              </div>
+            </motion.div>
           </motion.div>
 
           {/* Sign In button */}
@@ -296,7 +249,7 @@ export default function LoginPage() {
             <MotionButton
               variant="secondary"
               className="w-full py-4 text-base"
-              onClick={handleCreateAccount}
+              onClick={() => router.push("/signup")}
             >
               Create Account
             </MotionButton>
