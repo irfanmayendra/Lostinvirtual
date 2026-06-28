@@ -222,6 +222,50 @@ model PageContent {
   @@map("page_contents")
 }
 
+/// Announcement banners (shown on landing/dashboard)
+model Announcement {
+  id        String    @id @default(uuid()) @db.Uuid
+  title     String
+  content   String    @db.Text
+  type      String    @default("info") // info, warning, success, error
+  active    Boolean   @default(true)
+  startsAt  DateTime? @map("starts_at")
+  endsAt    DateTime? @map("ends_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("announcements")
+}
+
+/// SEO metadata per page
+model SeoSetting {
+  id          String   @id @default(uuid()) @db.Uuid
+  page        String   @unique // "home", "login", "signup", "dashboard"
+  title       String?
+  description String?  @db.Text
+  ogImage     String?  @map("og_image")
+  keywords    String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("seo_settings")
+}
+
+/// Merchandise catalog
+model Merchandise {
+  id          String          @id @default(uuid()) @db.Uuid
+  name        String
+  type        MerchandiseType
+  description String?         @db.Text
+  price       Float?
+  imageUrl    String?         @map("image_url")
+  active      Boolean         @default(true)
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
+
+  @@map("merchandise")
+}
+
 /// System audit trail
 model AuditLog {
   id        String   @id @default(uuid()) @db.Uuid
