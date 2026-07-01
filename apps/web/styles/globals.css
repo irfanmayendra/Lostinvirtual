@@ -1,5 +1,98 @@
 @import "tailwindcss";
 
+/* ── Base ── */
 body {
-  @apply bg-black text-white selection:bg-blue-500/30;
+  @apply bg-[#0a0a0f] text-white selection:bg-indigo-500/30;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ── Glassmorphism Card ── */
+.glass {
+  background: rgba(15, 15, 30, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ── Focus Glow ── */
+.focus-glow:focus-within {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25), 0 0 20px rgba(99, 102, 241, 0.1);
+}
+
+/* ── Input Styling ── */
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  background: #1a1a2e;
+  border: 1px solid #333;
+  transition: all 0.2s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2), 0 0 20px rgba(99, 102, 241, 0.08);
+}
+
+/* ── Gradient Button ── */
+.btn-gradient {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  transition: all 0.2s ease;
+}
+
+.btn-gradient:hover {
+  background: linear-gradient(135deg, #7c7ff7, #a78bfa);
+  transform: scale(1.02);
+}
+
+.btn-gradient:active {
+  transform: scale(0.98);
+}
+
+/* ── Shimmer Loading ── */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #1a1a2e 25%, #2a2a4e 50%, #1a1a2e 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ── Grid Overlay ── */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ── Subtle Floating Particles ── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.float-anim {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0f;
+}
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
